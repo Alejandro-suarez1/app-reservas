@@ -1,6 +1,6 @@
 import react from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
-import { spacing, colors, typography } from "../theme";
+import { spacing, colors, typography, radius } from "../theme";
 
 export default function NivelFiltro({ etiqueta, activo, onPress }) {
     return (

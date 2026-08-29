@@ -6,6 +6,7 @@ import {spacing, colors, typography} from '../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {Ionicons} from '@expo/vector-icons';
 import {CLASES, NIVELES} from '../data/clases'
+import { useState } from 'react';
 
 const ClasesScreen = ({navigation}) => {
     //const { columnas, paddingHorizontal } = useResposive;

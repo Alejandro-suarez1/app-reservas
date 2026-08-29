@@ -15,9 +15,16 @@ export const spacing = {
     xl: 20
 }
 
+export const radius = {
+    sm: 4,
+    md: 8,
+    lg: 12,
+    full: 9999
+}
+
 export const typography = {
-    titulo: {fontSize: 26, fontWeight: '800', color: colores.texto},
-    subtitulo: {fontSize: 18, fontWeight: '600', color: colores.texto},
+    titulo: {fontSize: 26, fontWeight: '800', color: colors.texto},
+    subtitulo: {fontSize: 18, fontWeight: '600', color: colors.texto},
 }
 
 export default {colors, spacing, typography}
