@@ -2,6 +2,7 @@ import react from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ClasesScreen from "../screens/ClasesScreen";
 import { colors } from "../theme";
+import {DetalleClaseScreen} from "../screens/DetalleClase";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,8 +16,8 @@ export default function ClasesStack() {
             />
             <Stack.Screen
                 name="DetalleClase"
-                component={ClasesScreen}
-                options={{headerShown: false}}
+                component={DetalleClaseScreen}
+                options={{title: 'Detalle', headerStyle: {backgroundColor: colors.primary}, headerTintColor: colors.white}}
             />
         </Stack.Navigator>
     )
