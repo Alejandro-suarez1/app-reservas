@@ -1,23 +1,23 @@
-import react from "react";
-import { Pressable, Text, StyleSheet } from "react-native";
-import { spacing, colors, typography, radius } from "../theme";
+import React from 'react';
+import { Pressable, Text, StyleSheet } from 'react-native';
+import { spacing, colors, radius } from '../theme';
 
 export default function NivelFiltro({ etiqueta, activo, onPress }) {
-    return (
-        <Pressable 
-            onPress={onPress}
-            style={({pressed}) => [
-                style.chip, 
-                activo && style.chipActivo,
-                pressed && { opacity: 0.7 }
-            ]}
-        >
-            <Text style={[style.texto, activo && style.textoActivo]}>{etiqueta}</Text>
-        </Pressable>
-    )
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.chip,
+        activo && styles.chipActivo,
+        pressed && { opacity: 0.7 },
+      ]}
+    >
+      <Text style={[styles.texto, activo && styles.textoActivo]}>{etiqueta}</Text>
+    </Pressable>
+  );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   chip: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,

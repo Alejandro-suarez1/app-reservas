@@ -1,24 +1,53 @@
-import {} from 'react';
+import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import EtiquetaNivel from './EtiquetaNivel';
-import {spacing, colors, typography} from '../theme';
-import {CLASES} from '../data/clases'
+import { spacing, colors, typography, radius } from '../theme';
 
 export default function Card({ clase, onPress }) {
-    return (
-        <Pressable onPress={onPress}>
-            <Image source={{ uri: clase.imagen }}/>
-            <View>
-                <EtiquetaNivel nivel={clase.nivel} />
-                <Text style={styles.titulo}>{clase.titulo}</Text>
-                <Text style={styles.descripcion}>{clase.descripcion}</Text>
-                {/* precio, nivel, nombre docente */}
-            </View>
-        </Pressable>
-    );
+  return (
+    <Pressable onPress={onPress} style={styles.card}>
+      <Image source={{ uri: clase.imagen }} style={styles.imagen} resizeMode="cover" />
+      <View style={styles.contenido}>
+        <EtiquetaNivel nivel={clase.nivel} />
+        <Text style={styles.titulo}>{clase.titulo}</Text>
+        <Text style={styles.descripcion}>{clase.descripcion}</Text>
+        <Text style={styles.profesor}>{clase.profesor.nombre}</Text>
+      </View>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
-    titulo: {
-        fontSize: 16, color: colors.texto}
-    })
+  card: {
+    flex: 1,
+    backgroundColor: colors.superficie,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: colors.borde,
+  },
+  imagen: {
+    width: '100%',
+    height: 160,
+  },
+  contenido: {
+    padding: spacing.md,
+  },
+  titulo: {
+    ...typography.subtitulo,
+    marginTop: spacing.sm,
+  },
+  descripcion: {
+    ...typography.cuerpo,
+    color: colors.textoSuave,
+    marginTop: spacing.xs,
+  },
+  profesor: {
+    marginTop: spacing.sm,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primario,
+  },
+});
