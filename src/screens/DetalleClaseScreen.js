@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Image, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResponsive from '../hooks/useResponsive';
@@ -8,10 +8,41 @@ export default function DetalleClaseScreen({ route, navigation }) {
   const { clase } = route.params;
   const { isTable } = useResponsive();
   const insets = useSafeAreaInsets();
+  const [cuposDisponibles, setCuposDisponibles] = useState(clase.cupos);
+  const [yaReservado, setYaReservado] = useState(false);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: clase.titulo });
-  }, [navigation, clase.titulo]);
+    navigation.setOptions({
+      title: clase.titulo,
+      headerStyle: {
+        height: 60 + insets.top,
+        backgroundColor: colors.superficie,
+      },
+      headerTitleStyle: {
+        marginTop: insets.top / 2,
+      },
+      headerLeftContainerStyle: {
+        marginTop: insets.top / 2,
+      },
+    });
+  }, [navigation, clase.titulo, insets.top]);
+
+  const handleReservar = () => {
+    if (cuposDisponibles <= 0) {
+      Alert.alert('Sin cupos', 'No quedan cupos disponibles para esta clase.');
+      return;
+    }
+
+    setCuposDisponibles((actual) => {
+      const nuevoValor = actual - 1;
+      if (nuevoValor <= 0) {
+        setYaReservado(true);
+      }
+      return nuevoValor;
+    });
+
+    Alert.alert('Reserva', '¡Reserva realizada con éxito!');
+  };
 
   return (
     <View style={[styles.pantalla, { paddingTop: insets.top }]}>
@@ -40,7 +71,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
             </View>
             <View style={styles.dato}>
               <Text style={styles.datoLabel}>Cupos</Text>
-              <Text style={styles.datoValor}>{clase.cupos}</Text>
+              <Text style={styles.datoValor}>{cuposDisponibles}</Text>
             </View>
             <View style={styles.dato}>
               <Text style={styles.datoLabel}>Modalidad</Text>
@@ -55,8 +86,12 @@ export default function DetalleClaseScreen({ route, navigation }) {
 
       <View style={[styles.barra, { paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.md }]}>
         <Text style={styles.precioBarra}>$ {clase.precio}</Text>
-        <Pressable style={styles.botonReserva} onPress={() => Alert.alert('Reserva', '¿Desea realizar la reserva?')}>
-          <Text style={styles.textoBoton}>Reservar</Text>
+        <Pressable
+          style={[styles.botonReserva, cuposDisponibles <= 0 && styles.botonReservaDisabled]}
+          onPress={handleReservar}
+          disabled={cuposDisponibles <= 0}
+        >
+          <Text style={styles.textoBoton}>{cuposDisponibles <= 0 ? 'Sin cupos' : 'Reservar curso'}</Text>
         </Pressable>
       </View>
     </View>
@@ -113,6 +148,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
+  },
+  botonReservaDisabled: {
+    backgroundColor: '#B0B0B0',
   },
   textoBoton: { color: '#FFFFFF', fontWeight: '700' },
 });
