@@ -45,11 +45,11 @@ export function ReservaProvider({ children }) {
         };
         let resultados = { ok: true};
         setReservas((prevReservas) => {
-            if (previa.some((r) => r.id === nueva.id)) {
+            if (prevReservas.some((r) => r.id === nueva.id)) {
                 resultados = {ok: false, mensaje: 'Data duplicada'}
-                return previa;
+                return prevReservas;
             }
-            return [nueva, ...previa];
+            return [nueva, ...prevReservas];
         });
         return resultados;
     }, []);//cierra el callback

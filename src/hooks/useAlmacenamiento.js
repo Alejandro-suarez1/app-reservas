@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function useAlmacenamiento(clave, valorInicial) {
@@ -12,7 +12,7 @@ export default function useAlmacenamiento(clave, valorInicial) {
         .then((guardando) => {
             if (activo && guardando !== null) setValor(JSON.parse(guardando)); 
         })
-        .catch((error) => console.log('Error leyendo' + clave, error))
+        .catch((error) => console.log('Error leyendo ' + clave, error))
         .finally(() => activo && setListo(true));
 
         return() => {
@@ -26,8 +26,10 @@ export default function useAlmacenamiento(clave, valorInicial) {
             try {
                 await AsyncStorage.setItem(clave, JSON.stringify(nuevoValor));              
             } catch(error) {
-                console.log('Error guardando' + clave, error);
+                console.log('Error guardando ' + clave, error);
             }
         }, [clave]
     );
+
+    return { valor, listo, actualizar };
 };
