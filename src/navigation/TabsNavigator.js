@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ReservasScreen from '../screens/ReservasScreen';
 import PerfilScreen from '../screens/PerfilScreen';
 import ClasesStack from './ClasesStack';
-import { colors } from '../theme/colors'; 
+import { colors } from '../theme'; 
 
 const Tab = createBottomTabNavigator();
 
