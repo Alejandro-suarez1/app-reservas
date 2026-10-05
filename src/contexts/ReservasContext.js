@@ -9,7 +9,6 @@ export function ReservaProvider({ children }) {
     const [reservas, setReservas] = useState([]);
     const [cargando, setCargando] = useState(true);
 
-    // cargar las reservas que tengo guardadas, sino tengo nada, devolver un array vacio
     useEffect(() => {
         const cargar = async () => {
             try {
@@ -27,7 +26,7 @@ export function ReservaProvider({ children }) {
     }, []); 
 
     useEffect(() => {
-        if(cargando) return;
+        if (cargando) return;
         AsyncStorage.setItem(CLAVE_RESERVA, JSON.stringify(reservas)).catch((error) => {
             console.log('Ocurrió un error guardando la reserva', error);
         });
@@ -43,29 +42,31 @@ export function ReservaProvider({ children }) {
             horario: horario,
             creadaEn: new Date().toISOString(),
         };
-        let resultados = { ok: true};
+        let resultados = { ok: true };
         setReservas((prevReservas) => {
             if (prevReservas.some((r) => r.id === nueva.id)) {
-                resultados = {ok: false, mensaje: 'Data duplicada'}
+                resultados = { ok: false, mensaje: 'Data duplicada' };
                 return prevReservas;
             }
             return [nueva, ...prevReservas];
         });
         return resultados;
-    }, []);//cierra el callback
+    }, []);
+
+    const cancelarReserva = useCallback((id) => {
+        setReservas((prevReservas) => prevReservas.filter((reserva) => reserva.id !== id));
+    }, []);
 
     const valor = useMemo(() => ({
         reservas,
         cargando,
         agregarReserva,
-    }), [reservas, cargando, agregarReserva]);
+        cancelarReserva,
+    }), [reservas, cargando, agregarReserva, cancelarReserva]);
 
     return (
         <ReservaContext.Provider value={valor}>
             {children}
         </ReservaContext.Provider>
     );
-
-} // llave que cierra la funcion 
-
-  
+}
