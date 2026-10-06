@@ -1,70 +1,58 @@
-import React, { useContext } from 'react';
-import { View, FlatList, ActivityIndicator, Alert, StyleSheet, Text } from 'react-native';
-import { ReservaContext } from '../contexts/ReservasContext';
+import React from 'react';
+import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useReserva from '../hooks/useReserva';
 import ReservaItem from '../components/ReservaItem';
 import EstadoVacio from '../components/EstadoVacio';
+import { colors, spacing } from '../theme';
 
-export default function ReservasScreen() {
-    const { reservas, cargando, cancelarReserva } = useContext(ReservaContext);
+export default function ReservasScreen({ navigation }) {
+  const { reservas, cargando, cancelarReserva } = useReserva();
+  const insets = useSafeAreaInsets();
 
-    if (cargando) {
-        return (
-            <View style={styles.center}>
-                <ActivityIndicator size="large" color="#007AFF" />
-            </View>
-        );
-    }
-
-    const confirmarCancelar = (id) => {
-        Alert.alert(
-            'Cancelar reserva',
-            '¿Estás seguro de que deseas cancelar esta reserva?',
-            [
-                {
-                    text: 'No',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Sí, cancelar',
-                    style: 'destructive',
-                    onPress: () => cancelarReserva(id),
-                },
-            ]
-        );
-    };
-
-    if (reservas.length === 0) {
-        return <EstadoVacio mensaje="No tienes reservas agendadas aún." />;
-    }
-
+  if (cargando) {
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={reservas}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <ReservaItem 
-                        reserva={item} 
-                        onCancelar={() => confirmarCancelar(item.id)} 
-                    />
-                )}
-                contentContainerStyle={styles.listContent}
-            />
-        </View>
+      <View style={styles.centrado}>
+        <ActivityIndicator size="large" color={colors.primario} />
+      </View>
     );
+  }
+
+  return (
+    <View style={styles.pantalla}>
+      <FlatList
+        data={reservas}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ReservaItem reserva={item} onCancelar={cancelarReserva} />
+        )}
+        contentContainerStyle={[
+          styles.lista,
+          reservas.length === 0 && styles.listaVacia,
+          { paddingBottom: spacing.md + insets.bottom },
+        ]}
+        ListEmptyComponent={
+          <EstadoVacio
+            icono="calendar-outline"
+            titulo="Aún no tienes reservas"
+            mensaje="Reserva una clase desde Inicio y aparecerá aquí."
+            textoAccion="Ver clases"
+            onAction={() => navigation.navigate('Inicio')}
+          />
+        }
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-    },
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    listContent: {
-        padding: 16,
-    },
+  pantalla: { flex: 1, backgroundColor: colors.fondo },
+  lista: { padding: spacing.md },
+  listaVacia: { flexGrow: 1, justifyContent: 'center' },
+  centrado: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.fondo,
+  },
 });

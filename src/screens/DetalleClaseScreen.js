@@ -2,14 +2,17 @@ import React, { useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Image, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useResponsive from '../hooks/useResponsive';
+import useReserva from '../hooks/useReserva';
 import { colors, spacing, sombra, typography, radius } from '../theme';
 
 export default function DetalleClaseScreen({ route, navigation }) {
   const { clase } = route.params;
   const { isTable } = useResponsive();
   const insets = useSafeAreaInsets();
+  const { agregarReserva } = useReserva();
+
   const [cuposDisponibles, setCuposDisponibles] = useState(clase.cupos);
-  const [yaReservado, setYaReservado] = useState(false);
+  const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,20 +31,25 @@ export default function DetalleClaseScreen({ route, navigation }) {
   }, [navigation, clase.titulo, insets.top]);
 
   const handleReservar = () => {
+    if (!horarioSeleccionado) {
+      Alert.alert('Horario requerido', 'Por favor selecciona un horario para tu clase.');
+      return;
+    }
+
     if (cuposDisponibles <= 0) {
       Alert.alert('Sin cupos', 'No quedan cupos disponibles para esta clase.');
       return;
     }
 
-    setCuposDisponibles((actual) => {
-      const nuevoValor = actual - 1;
-      if (nuevoValor <= 0) {
-        setYaReservado(true);
-      }
-      return nuevoValor;
-    });
+    const resultado = agregarReserva(clase, horarioSeleccionado);
 
-    Alert.alert('Reserva', '¡Reserva realizada con éxito!');
+    if (!resultado.ok) {
+      Alert.alert('Reserva no realizada', resultado.mensaje);
+      return;
+    }
+
+    setCuposDisponibles((actual) => actual - 1);
+    Alert.alert('¡Éxito!', `Reserva confirmada para el horario ${horarioSeleccionado}.`);
   };
 
   return (
@@ -79,7 +87,32 @@ export default function DetalleClaseScreen({ route, navigation }) {
             </View>
           </View>
 
-          <Text style={styles.horarios}>Horarios: {clase.horarios.join(', ')}</Text>
+          <Text style={styles.seccionHorarios}>Selecciona un horario:</Text>
+          <View style={styles.horariosContainer}>
+            {clase.horarios?.map((horario) => {
+              const esSeleccionado = horarioSeleccionado === horario;
+              return (
+                <Pressable
+                  key={horario}
+                  style={[
+                    styles.chipHorario,
+                    esSeleccionado && styles.chipHorarioSeleccionado,
+                  ]}
+                  onPress={() => setHorarioSeleccionado(horario)}
+                >
+                  <Text
+                    style={[
+                      styles.textoHorario,
+                      esSeleccionado && styles.textoHorarioSeleccionado,
+                    ]}
+                  >
+                    {horario}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
           <Text style={styles.precio}>$ {clase.precio}</Text>
         </View>
       </ScrollView>
@@ -126,7 +159,24 @@ const styles = StyleSheet.create({
   profesorNombre: { fontSize: 15, fontWeight: '700', color: colors.texto },
   profesorPais: { fontSize: 12, color: colors.textoSuave },
   descripcion: { ...typography.cuerpo, color: colors.textoSuave, lineHeight: 22, marginTop: spacing.md },
-  horarios: { marginTop: spacing.md, color: colors.texto, fontWeight: '600' },
+  
+  seccionHorarios: { marginTop: spacing.lg, fontSize: 15, fontWeight: '700', color: colors.texto },
+  horariosContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
+  chipHorario: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.superficie,
+    borderWidth: 1,
+    borderColor: colors.borde,
+  },
+  chipHorarioSeleccionado: {
+    backgroundColor: colors.primario,
+    borderColor: colors.primario,
+  },
+  textoHorario: { fontSize: 13, color: colors.texto, fontWeight: '600' },
+  textoHorarioSeleccionado: { color: '#FFFFFF' },
+
   barra: {
     position: 'absolute',
     left: 0,

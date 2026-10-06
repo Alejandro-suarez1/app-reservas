@@ -23,7 +23,7 @@ export function ReservaProvider({ children }) {
             }
         };
         cargar();
-    }, []); 
+    }, []);
 
     useEffect(() => {
         if (cargando) return;
@@ -33,28 +33,32 @@ export function ReservaProvider({ children }) {
     }, [reservas, cargando]);
 
     const agregarReserva = useCallback((clase, horario) => {
+        const idReserva = `${clase.id}_${horario}`;
+
+        if (reservas.some((r) => r.id === idReserva)) {
+            return { ok: false, mensaje: 'Ya reservaste esta clase en ese horario' };
+        }
+
+        const nombreProfesor = clase.profesor?.apellido
+            ? `${clase.profesor.nombre} ${clase.profesor.apellido}`
+            : (clase.profesor?.nombre || 'Profesor');
+
         const nueva = {
-            id: clase.id + '_' + horario,
+            id: idReserva,
             titulo: clase.titulo,
             nivel: clase.nivel,
-            profesor: clase.profesor.nombre + ' ' + clase.profesor.apellido,    
+            profesor: nombreProfesor,
             precio: clase.precio,
             horario: horario,
             creadaEn: new Date().toISOString(),
         };
-        let resultados = { ok: true };
-        setReservas((prevReservas) => {
-            if (prevReservas.some((r) => r.id === nueva.id)) {
-                resultados = { ok: false, mensaje: 'Data duplicada' };
-                return prevReservas;
-            }
-            return [nueva, ...prevReservas];
-        });
-        return resultados;
-    }, []);
+
+        setReservas((prev) => [nueva, ...prev]);
+        return { ok: true };
+    }, [reservas]);
 
     const cancelarReserva = useCallback((id) => {
-        setReservas((prevReservas) => prevReservas.filter((reserva) => reserva.id !== id));
+        setReservas((prev) => prev.filter((reserva) => reserva.id !== id));
     }, []);
 
     const valor = useMemo(() => ({
