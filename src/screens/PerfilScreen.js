@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { UsuariosContext } from '../contexts/UsuariosContext';
 
 const PerfilScreen = () => {
-    const { usuario, registrarUsuario, actualizarUsuario } = useContext(UsuariosContext);
+    const { usuario, cargando, registrarUsuario, actualizarUsuario } = useContext(UsuariosContext);
 
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
@@ -17,6 +17,25 @@ const PerfilScreen = () => {
         registrarUsuario(nombre, email, telefono);
     };
 
+    const iniciarEdicion = () => {
+        setNuevoEmail(usuario.email);
+        setNuevoTelefono(usuario.telefono);
+        setEditando(true);
+    };
+
+    const guardarCambios = () => {
+        actualizarUsuario(nuevoEmail, nuevoTelefono);
+        setEditando(false);
+    };
+
+    if (cargando) {
+        return (
+            <View>
+                <Text>Cargando...</Text>
+            </View>
+        );
+    }
+    
     if (usuario === null) {
         return (
             <View>
@@ -31,13 +50,31 @@ const PerfilScreen = () => {
             </View>
         );
     }
+
+    if (editando) {
+        return (
+            <View>
+                <Text>Nombre: {usuario.nombre}</Text>
+
+                <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder='Email' keyboardType='email-address' autoCapitalize='none'/>
+                <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder='Telefono' keyboardType='phone-pad'/>
+                <Pressable onPress={guardarCambios}>
+                    <Text>Guardar</Text>
+                </Pressable>
+
+                <Pressable onPress={() => setEditando(false)}>
+                    <Text>Cancelar</Text>
+                </Pressable>
+            </View>
+        );
+    }
     
     return (
         <View>
             <Text>Usuario: {usuario.nombre}</Text>
             <Text>Email: {usuario.email}</Text>
             <Text>Teléfono: {usuario.telefono}</Text>
-            <Pressable onPress={() => setEditando(true)}>
+            <Pressable onPress={iniciarEdicion}>
                 <Text>Editar</Text>
             </Pressable>
         </View>
