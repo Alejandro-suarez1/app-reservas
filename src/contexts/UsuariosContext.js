@@ -39,11 +39,12 @@ const UsuariosProvider = ({ children }) => {
         });
     }, [usuario, cargando]);
 
-    const registrarUsuario = (nombre, email, telefono) => {
+    const registrarUsuario = (nombre, email, telefono, foto) => {
         const nuevoUsuario = {
             nombre,
             email,
             telefono,
+            foto,
         };
         setUsuario(nuevoUsuario);
     };
