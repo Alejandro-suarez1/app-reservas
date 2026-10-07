@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors, spacing, sombra, radius } from '../theme';
 
 export default function ReservaItem({ reserva, onCancelar }) {
+  //Si no existe una reserva, no muestra nada
   if (!reserva) return null;
 
   return (
@@ -15,7 +16,7 @@ export default function ReservaItem({ reserva, onCancelar }) {
       </View>
       <Pressable
         style={styles.botonCancelar}
-        onPress={() => onCancelar?.(reserva.id)}
+        onPress={() => onCancelar(reserva.id)}
       >
         <Text style={styles.textoCancelar}>Cancelar</Text>
       </Pressable>
@@ -31,8 +32,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    ...sombra.sombra,
+    justifyContent: 'space-between'
   },
   info: { flex: 1, marginRight: spacing.sm },
   titulo: { fontSize: 16, fontWeight: 'bold', color: colors.texto },

@@ -112,6 +112,8 @@ const style = StyleSheet.create({
   filtrosWrap: {
     marginTop: spacing.md,
     marginBottom: spacing.md,
+    flexGrow: 0,    
+    flexShrink: 0, 
   },
   input: {
     flex: 1,
