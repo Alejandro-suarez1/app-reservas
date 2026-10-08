@@ -4,7 +4,7 @@ import { UsuariosContext } from '../contexts/UsuariosContext';
 import { colors, spacing, radius, typography } from '../theme';
 
 const PerfilScreen = () => {
-    const { usuario, cargando, registrarUsuario, actualizarUsuario } = useContext(UsuariosContext);
+    const { usuario, cargando, registrarUsuario, actualizarUsuario, cerrarSesion } = useContext(UsuariosContext);
 
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
@@ -30,6 +30,15 @@ const PerfilScreen = () => {
         setEditando(false);
     };
 
+    const manejarCerrarSesion = () => {
+        setNombre('');
+        setEmail('');
+        setTelefono('');
+        setFoto('');
+        setEditando(false);
+        cerrarSesion();
+    };
+
     if (cargando) {
         return (
             <View style={styles.contenedor}>
@@ -47,9 +56,11 @@ const PerfilScreen = () => {
                 <TextInput value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
                 <TextInput value={telefono} onChangeText={setTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
                 <TextInput value={foto} onChangeText={setFoto} placeholder="URL de la foto" keyboardType="url" autoCapitalize="none" style={styles.input}/>
-                <Pressable onPress={manejarRegistro} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
-                    <Text style={styles.textoBoton}>Registrar</Text>
-                </Pressable>
+                <View style={styles.botones}>
+                    <Pressable onPress={manejarRegistro} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
+                        <Text style={styles.textoBoton}>Registrar</Text>
+                    </Pressable>
+                </View>
             </View>
         );
     }
@@ -64,13 +75,15 @@ const PerfilScreen = () => {
 
                 <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
                 <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
-                <Pressable onPress={guardarCambios} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
-                    <Text style={styles.textoBoton}>Guardar</Text>
-                </Pressable>
+                <View style={styles.botones}>
+                    <Pressable onPress={guardarCambios} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
+                        <Text style={styles.textoBoton}>Guardar</Text>
+                    </Pressable>
 
-                <Pressable onPress={() => setEditando(false)} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
-                    <Text style={styles.textoBotonSecundario}>Cancelar</Text>
-                </Pressable>
+                    <Pressable onPress={() => setEditando(false)} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
+                        <Text style={styles.textoBotonSecundario}>Cancelar</Text>
+                    </Pressable>
+                </View>
             </View>
         );
     }
@@ -90,9 +103,14 @@ const PerfilScreen = () => {
                 <Text style={styles.etiqueta}>Teléfono:</Text>
                 <Text style={styles.valor}>{usuario.telefono}</Text>
             </View>
-            <Pressable onPress={iniciarEdicion} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
-                <Text style={styles.textoBoton}>Editar</Text>
-            </Pressable>
+            <View style={styles.botones}>
+                <Pressable onPress={iniciarEdicion} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
+                    <Text style={styles.textoBoton}>Editar</Text>
+                </Pressable>
+                <Pressable onPress={manejarCerrarSesion} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
+                    <Text style={styles.textoBotonSecundario}>Cerrar Sesión</Text>
+                </Pressable>
+            </View>
         </View>
     );
 };
@@ -102,6 +120,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colors.fondo,
         padding: spacing.lg,
+        alignItems: 'center',
     },
 
     titulo: {
@@ -110,6 +129,7 @@ const styles = StyleSheet.create({
     },
 
     input: {
+        width: '100%',
         borderWidth: 1,
         borderColor: colors.borde,
         borderRadius: radius.md,
@@ -120,11 +140,12 @@ const styles = StyleSheet.create({
     },
 
     botonPrincipal: {
-    backgroundColor: colors.primario,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
+        width: '100%',
+        backgroundColor: colors.primario,
+        borderRadius: radius.md,
+        padding: spacing.md,
+        alignItems: 'center',
+        marginTop: spacing.sm,
     },
 
     botonPresionado: {
@@ -137,13 +158,14 @@ const styles = StyleSheet.create({
     },
 
     botonSecundario: {
-    borderWidth: 1,
-    borderColor: colors.borde,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-    backgroundColor: colors.superficie,
+        width: '100%',
+        borderWidth: 1,
+        borderColor: colors.borde,
+        borderRadius: radius.md,
+        padding: spacing.md,
+        alignItems: 'center',
+        marginTop: spacing.sm,
+        backgroundColor: colors.superficie,
     },
 
     textoBotonSecundario: {
@@ -152,13 +174,13 @@ const styles = StyleSheet.create({
     },
 
     avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primarioSuave,
-    overflow: 'hidden',
+        width: 100,
+        height: 100,
+        borderRadius: radius.full,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.primarioSuave,
+        overflow: 'hidden',
     },
 
     avatarInicial: {
@@ -168,20 +190,28 @@ const styles = StyleSheet.create({
     },
 
     datosUsuario: {
-    marginTop: spacing.xl,
-    marginBottom: spacing.md,
+        marginTop: spacing.xl,
+        marginBottom: spacing.md,
+        alignItems: 'center',
     },
 
     etiqueta: {
         ...typography.etiqueta,
         color: colors.textoSuave,
         marginBottom: spacing.xs,
+        textAlign: 'center',
     },
 
     valor: {
         ...typography.cuerpo,
         color: colors.texto,
         marginBottom: spacing.lg,
+        textAlign: 'center',
+    },
+
+    botones: {
+        width: '100%',
+        marginTop: 'auto',
     },
 });
 

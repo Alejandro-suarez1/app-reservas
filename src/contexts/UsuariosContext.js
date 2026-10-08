@@ -62,11 +62,16 @@ const UsuariosProvider = ({ children }) => {
         });
     };
 
+    const cerrarSesion = () => {
+        setUsuario(null);
+    };
+
     const valor = {
         usuario,
         cargando,
         registrarUsuario,
         actualizarUsuario,
+        cerrarSesion,
     };
 
     return (
