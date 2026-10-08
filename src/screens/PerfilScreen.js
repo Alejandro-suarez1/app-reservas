@@ -76,20 +76,23 @@ const PerfilScreen = () => {
 
     if (cargando) {
         return (
-            <ScrollView style={styles.scroll} contentContainerStyle={styles.contenidoScroll} keyboardShouldPersistTaps="handled">
-                <Text>Cargando...</Text>
-            </ScrollView>
+            <View style={styles.contenedor}>
+                <Text style={styles.textoCarga}>Cargando...</Text>
+            </View>
         );
     }
-    
+
     if (usuario === null) {
         return (
             <ScrollView style={styles.scroll} contentContainerStyle={styles.contenidoScroll} keyboardShouldPersistTaps="handled">
                 <Text style={styles.titulo}>Registrar Usuario</Text>
 
-                <TextInput value={nombre} onChangeText={setNombre} placeholder="Nombre" autoCapitalize="words" style={styles.input}/> {errores.nombre && <Text style={styles.textoError}>{errores.nombre}</Text>}
-                <TextInput value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/> {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
-                <TextInput value={telefono} onChangeText={setTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/> {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
+                <TextInput value={nombre} onChangeText={setNombre} placeholder="Nombre" autoCapitalize="words" style={styles.input}/>
+                {errores.nombre && <Text style={styles.textoError}>{errores.nombre}</Text>}
+                <TextInput value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
+                {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
+                <TextInput value={telefono} onChangeText={setTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
+                {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
                 <TextInput value={foto} onChangeText={setFoto} placeholder="URL de la foto" keyboardType="url" autoCapitalize="none" style={styles.input}/>
                 <View style={styles.botones}>
                     <Pressable onPress={manejarRegistro} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
@@ -108,8 +111,10 @@ const PerfilScreen = () => {
                 <Text style={styles.etiqueta}>Nombre</Text>
                 <Text style={styles.valor}>{usuario.nombre}</Text>
 
-                <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/> {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
-                <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/> {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
+                <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
+                {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
+                <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
+                {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
                 <View style={styles.botones}>
                     <Pressable onPress={guardarCambios} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
                         <Text style={styles.textoBoton}>Guardar</Text>
@@ -270,6 +275,11 @@ const styles = StyleSheet.create({
     avatarImagen: {
         width: '100%',
         height: '100%',
+    },
+
+    textoCarga: {
+        ...typography.cuerpo,
+        color: colors.textoSuave,
     },
 });
 

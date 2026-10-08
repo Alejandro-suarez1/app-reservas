@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
 import React from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, FlatList, ScrollView, StyleSheet, TextInput } from 'react-native';
 import Card from '../components/Card';
 import NivelFiltro from '../components/NivelFiltro';
