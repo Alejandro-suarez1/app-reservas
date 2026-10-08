@@ -1,7 +1,23 @@
 import React, {useContext, useState} from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, Image, ScrollView } from 'react-native';
 import { UsuariosContext } from '../contexts/UsuariosContext';
 import { colors, spacing, radius, typography } from '../theme';
+
+const validarUsuario = (nombre, email, telefono) => {
+    const errores = {};
+
+    if (nombre.trim() === '') {
+        errores.nombre = 'El nombre es obligatorio';
+    }
+    if (!email.trim().includes('@')) {
+        errores.email = 'El email debe contener un @';
+    }
+    if (telefono.length !== 10) {
+        errores.telefono = 'El teléfono debe tener 10 dígitos';
+    }
+
+    return errores;
+};
 
 const PerfilScreen = () => {
     const { usuario, cargando, registrarUsuario, actualizarUsuario, cerrarSesion } = useContext(UsuariosContext);
@@ -9,25 +25,43 @@ const PerfilScreen = () => {
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
     const [telefono, setTelefono] = useState('');
-    const [foto, setFoto] =useState('');
+    const [foto, setFoto] = useState('');
+
+    const [errores, setErrores] = useState({});
 
     const [editando, setEditando] = useState(false);
     const [nuevoEmail, setNuevoEmail] = useState('');
     const [nuevoTelefono, setNuevoTelefono] = useState('');
 
     const manejarRegistro = () => {
-        registrarUsuario(nombre, email, telefono, foto);
+        const erroresEncontrados = validarUsuario(nombre, email, telefono);
+        setErrores(erroresEncontrados);
+
+        if (Object.keys(erroresEncontrados).length === 0) {
+            registrarUsuario(nombre, email, telefono, foto);
+        }
     };
 
     const iniciarEdicion = () => {
+        setErrores({});
         setNuevoEmail(usuario.email);
         setNuevoTelefono(usuario.telefono);
         setEditando(true);
     };
 
-    const guardarCambios = () => {
-        actualizarUsuario(nuevoEmail, nuevoTelefono);
+    const cancelarEdicion = () => {
+        setErrores({});
         setEditando(false);
+    };
+
+    const guardarCambios = () => {
+        const erroresEncontrados = validarUsuario(usuario.nombre, nuevoEmail, nuevoTelefono);
+        setErrores(erroresEncontrados);
+
+        if (Object.keys(erroresEncontrados).length === 0) {
+            actualizarUsuario(nuevoEmail, nuevoTelefono);
+            setEditando(false);
+        }
     };
 
     const manejarCerrarSesion = () => {
@@ -35,33 +69,34 @@ const PerfilScreen = () => {
         setEmail('');
         setTelefono('');
         setFoto('');
+        setErrores({});
         setEditando(false);
         cerrarSesion();
     };
 
     if (cargando) {
         return (
-            <View style={styles.contenedor}>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.contenidoScroll} keyboardShouldPersistTaps="handled">
                 <Text>Cargando...</Text>
-            </View>
+            </ScrollView>
         );
     }
     
     if (usuario === null) {
         return (
-            <View style={styles.contenedor}>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.contenidoScroll} keyboardShouldPersistTaps="handled">
                 <Text style={styles.titulo}>Registrar Usuario</Text>
 
-                <TextInput value={nombre} onChangeText={setNombre} placeholder="Nombre" autoCapitalize="words" style={styles.input}/>
-                <TextInput value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
-                <TextInput value={telefono} onChangeText={setTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
+                <TextInput value={nombre} onChangeText={setNombre} placeholder="Nombre" autoCapitalize="words" style={styles.input}/> {errores.nombre && <Text style={styles.textoError}>{errores.nombre}</Text>}
+                <TextInput value={email} onChangeText={setEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/> {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
+                <TextInput value={telefono} onChangeText={setTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/> {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
                 <TextInput value={foto} onChangeText={setFoto} placeholder="URL de la foto" keyboardType="url" autoCapitalize="none" style={styles.input}/>
                 <View style={styles.botones}>
                     <Pressable onPress={manejarRegistro} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
                         <Text style={styles.textoBoton}>Registrar</Text>
                     </Pressable>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
  
@@ -69,22 +104,21 @@ const PerfilScreen = () => {
 
     if (editando) {
         return (
-            <View style={styles.contenedor}>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.contenidoScroll} keyboardShouldPersistTaps="handled">
                 <Text style={styles.etiqueta}>Nombre</Text>
                 <Text style={styles.valor}>{usuario.nombre}</Text>
 
-                <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/>
-                <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/>
+                <TextInput value={nuevoEmail} onChangeText={setNuevoEmail} placeholder="Email" keyboardType="email-address" autoCapitalize="none" style={styles.input}/> {errores.email && <Text style={styles.textoError}>{errores.email}</Text>}
+                <TextInput value={nuevoTelefono} onChangeText={setNuevoTelefono} placeholder="Teléfono" keyboardType="phone-pad" style={styles.input}/> {errores.telefono && <Text style={styles.textoError}>{errores.telefono}</Text>}
                 <View style={styles.botones}>
                     <Pressable onPress={guardarCambios} style={({ pressed }) => [styles.botonPrincipal, pressed && styles.botonPresionado]}>
                         <Text style={styles.textoBoton}>Guardar</Text>
                     </Pressable>
-
-                    <Pressable onPress={() => setEditando(false)} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
+                    <Pressable onPress={cancelarEdicion} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
                         <Text style={styles.textoBotonSecundario}>Cancelar</Text>
                     </Pressable>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 
@@ -92,7 +126,7 @@ const PerfilScreen = () => {
         <View style={styles.contenedor}>
             <View style={styles.avatar}>
                 {tieneFoto ? (
-                    <Image source={{ uri: usuario.foto }} style={styles.avatar}/>
+                    <Image source={{ uri: usuario.foto }} style={styles.avatarImagen}/>
                 ) : (<Text style={styles.avatarInicial}>{usuario.nombre.charAt(0).toUpperCase()}</Text>)}
             </View>
             <View style={styles.datosUsuario}>
@@ -108,7 +142,7 @@ const PerfilScreen = () => {
                     <Text style={styles.textoBoton}>Editar</Text>
                 </Pressable>
                 <Pressable onPress={manejarCerrarSesion} style={({ pressed }) => [styles.botonSecundario, pressed && styles.botonPresionado]}>
-                    <Text style={styles.textoBotonSecundario}>Cerrar Sesión</Text>
+                    <Text style={styles.textoBotonSecundario}>Cerrar sesión</Text>
                 </Pressable>
             </View>
         </View>
@@ -212,6 +246,30 @@ const styles = StyleSheet.create({
     botones: {
         width: '100%',
         marginTop: 'auto',
+    },
+
+    scroll: {
+        flex: 1,
+        backgroundColor: colors.fondo,
+    },
+
+    contenidoScroll: {
+        padding: spacing.lg,
+        alignItems: 'center',
+        flexGrow: 1,
+    },
+
+    textoError: {
+        width: '100%',
+        color: colors.error,
+        fontSize: 12,
+        marginTop: -spacing.sm,
+        marginBottom: spacing.sm,
+    },
+
+    avatarImagen: {
+        width: '100%',
+        height: '100%',
     },
 });
 
