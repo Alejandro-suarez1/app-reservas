@@ -9,9 +9,11 @@ export default function DetalleClaseScreen({ route, navigation }) {
   const { clase } = route.params;
   const { isTable } = useResponsive();
   const insets = useSafeAreaInsets();
-  const { agregarReserva } = useReserva();
+  const { agregarReserva, reservas } = useReserva();
 
-  const [cuposDisponibles, setCuposDisponibles] = useState(clase.cupos);
+  const cuposDisponibles =
+    clase.cupos - reservas.filter((r) => r.claseId === clase.id).length;
+
   const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
 
   useLayoutEffect(() => {
@@ -48,7 +50,6 @@ export default function DetalleClaseScreen({ route, navigation }) {
       return;
     }
 
-    setCuposDisponibles((actual) => actual - 1);
     Alert.alert('¡Éxito!', `Reserva confirmada para el horario ${horarioSeleccionado}.`);
   };
 
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
   profesorNombre: { fontSize: 15, fontWeight: '700', color: colors.texto },
   profesorPais: { fontSize: 12, color: colors.textoSuave },
   descripcion: { ...typography.cuerpo, color: colors.textoSuave, lineHeight: 22, marginTop: spacing.md },
-  
+
   seccionHorarios: { marginTop: spacing.lg, fontSize: 15, fontWeight: '700', color: colors.texto },
   horariosContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
   chipHorario: {

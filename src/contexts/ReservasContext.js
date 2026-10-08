@@ -45,6 +45,7 @@ export function ReservaProvider({ children }) {
 
         const nueva = {
             id: idReserva,
+            claseId: clase.id,
             titulo: clase.titulo,
             nivel: clase.nivel,
             profesor: nombreProfesor,
